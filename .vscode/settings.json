@@ -1,0 +1,12 @@
+{
+    "fileheader.customMade": {
+        // 头部注释默认字段
+        "Author": "Jie Li, School of Mathematics Statistics and Actuarial Science,\n\t\t\t\tUniversity of Kent.",
+        "Date": "Do not edit", // 设置后默认设置文件生成时间
+        "LastEditTime": "Do not edit", // 设置后，保存文件更改默认更新最后编辑时间
+        "LastEditors": "git config user.name", // 设置后，保存文件更改默认更新最后编辑人
+        "FilePath": "Do not edit", // 设置后，默认生成文件相对于项目的路径
+        "Description": "\r\n\n\n\n\n\n\n\n",
+        "custom_string_obkoro1_copyright": "Copyright (c) ${now_year}, Jie Li, jl725@kent.ac.uk\nAll Rights Reserved."
+    },
+}
