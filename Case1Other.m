@@ -2,7 +2,7 @@
 % Author      : Jie Li, School of Mathematics Statistics and Actuarial Science,
 % 				University of Kent.
 % Date        : 2024-10-22 16:21:49
-% Last Edited : 2024-10-22 16:24:04
+% Last Edited : 2024-10-22 23:47:39
 % Last Author : Jie Li
 % File Path   : /RlEn/Case1Other.m
 % Description :
@@ -33,26 +33,28 @@ ApEn = zeros(P, J);
 CP = zeros(J, 1);
 CP_mean = zeros(J, 1);
 CP_var = zeros(J, 1);
-
+sigma1 = 0.4;
+sigma2 = 0.5;
+m = 2;
 for j = 1:J
-    xData = generatePath2Rep(1, 1, p1, p2, N1, alpha(j));
+    xData = generatePath2Rep(1, 1, p1, p2, N1, alpha(j),sigma1,sigma2);
     X = xData';
     apen = zeros(P, 1);
     x_mean = zeros(P, 1);
     x_var = zeros(P, 1);
-
+    
     for i = 1:P
         data_vector = X(:, i);
-        apen(i) = ApEn_f(data_vector);
+        apen(i) = approximateEntropy(data_vector, [], m);
         x_mean(i) = mean(data_vector);
         x_var(i) = var(data_vector);
     end
-
+    
     ApEn(:, j) = apen;
     cp = findchangepts(apen, 'MaxNumChanges', 1, 'Statistic', 'mean');
     cp_mean = findchangepts(x_mean, 'MaxNumChanges', 1, 'Statistic', 'mean');
     cp_var = findchangepts(x_var, 'MaxNumChanges', 1, 'Statistic', 'mean');
-
+    
     if cp >= 0
         CP(j) = cp;
     end
@@ -62,11 +64,11 @@ for j = 1:J
     if cp_var >= 0
         CP_var(j) = cp_var;
     end
-
+    
     fprintf('Trial loop j= %3d\n', j);
 end
 tabulate(CP)
-tabulate(CP_mean)
-tabulate(CP_var)
+% tabulate(CP_mean)
+% tabulate(CP_var)
 
 save('Case1Other.mat')
