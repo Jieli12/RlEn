@@ -18,7 +18,7 @@
 % All Rights Reserved.
 %%
 
-function pathData = generatePath2Rep(initial1, initial2, p1, p2, n, alpha)
+function pathData = generatePath2Rep(initial1, initial2, p1, p2, n, alpha, s1, s2)
 %generatePath - This function generates the path data. The two model comes from
 %P.343 in the book Nonlinear Time Series (Fan and Yao, 2003)
 %
@@ -43,7 +43,7 @@ for i = 1:n
     x2 = -x22 .* exp(-x22.^2/2) + 1 ./ (1 + x22.^2) .* sin(alpha * x22) .* x21;
     % x1 = 1 ./ (1 + x12.^2) .* sin(pi * x12) .* x11;
     % x2 = 1 ./ (1 + x22.^2) .* cos(pi * x22) .* x21;
-    pathData(:, j) = [x1; x2] + [normrnd(0, 0.1, p1, 1);normrnd(0,0.15, p2,1)];
+    pathData(:, j) = [x1; x2] + [normrnd(0, s1, p1, 1);normrnd(0,s2, p2,1)];
 end
 
 pathData(:, 1:2) = [];
