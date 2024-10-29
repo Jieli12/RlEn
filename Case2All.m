@@ -2,7 +2,7 @@
 % Author      : Jie Li, School of Mathematics Statistics and Actuarial Science,
 % 				University of Kent.
 % Date        : 2021-02-06 17:34:11
-% Last Edited : 2024-10-22 21:56:16
+% Last Edited : 2024-10-25 09:55:38
 % Last Author : Jie Li
 % File Path   : /RlEn/Case2All.m
 % Description :
@@ -63,58 +63,53 @@ RlEn = zeros(P, J, M);
 h_lower_rlen = 0.005;
 h_upper_rlen = 1;
 % ncore = 5;
-pooljob = parpool('local', ncore);
+% pooljob = parpool('local', ncore);
+ncore = 32;
+pooljob = parpool('SlurmProfile1', ncore);
 
 parfor j = 1:J
+    d0_temp = zeros(P, 1);
+    d1_temp = zeros(P, 1);
     X1 = simulate(Mdl1, N_sample, 'NumPaths', P1);
     X2 = simulate(Mdl2, N_sample, 'NumPaths', P2);
     % in order to reduce transient effects, we only take the last N observations
     X1 = X1((N_sample - N + 1):end, :);
     X2 = X2((N_sample - N + 1):end, :);
-    X = [X1, X2];
-    X = 1 ./ (1 + exp(-X));
+    X0 = [X1, X2];
+    X1 = 1 ./ (1 + exp(-X0));
     h_opt2 = zeros(P, M);
     rlen = zeros(P, M);
     apen = zeros(P, M);
     r_opt = zeros(P, M);
     
     for k = 1:P% P=100 paths
-        Xk = X(:, k);
+        Xk0 = X0(:, k);
+        Xk1 = X1(:, k);
+        
+        d0_temp(k)=adftest(Xk0);
+        d1_temp(k)=adftest(Xk1);
         
         for m = 1:M
             % RlEn
-            myfun = @(h) -Inmh(Xk, m, h);
-            [h_temp, fval_opt] = fminbnd(myfun, h_lower_rlen, h_upper_rlen)
+            myfun = @(h) -Inmh(Xk1, m, h);
+            [h_temp, fval_opt] = fminbnd(myfun, h_lower_rlen, h_upper_rlen);
             h_opt2(k, m) = h_temp;
             rlen(k, m) = -fval_opt;
             % ApEn
-            n = N - m;
-            x_m = zeros(n, m);
-            
-            for i = 1:m
-                x_m(:, i) = X(i:(i + n - 1), k);
-            end
-            
-            x_m1 = [x_m, X(m + 1:N, k)];
-            S_vec = pdist(x_m, "chebychev");
-            s_vec = pdist(x_m1, "chebychev");
-            S = zeros(n, n, 2);
-            S(:, :, 1) = squareform(S_vec);
-            S(:, :, 2) = squareform(s_vec);
-            h_temp = 0.2 * mean(std(x_m));
-            fval = ApEn_pinus(h_temp, S, m, n);
-            r_opt(k, m) = h_temp;
-            apen(k, m) = fval;
+            apen(k, m) = approximateEntropy(Xk0, [], m);
             
         end
         
     end
+    p0_stationary(j) = mean(d0_temp);
+    p1_stationary(j) = mean(d1_temp);
     
     RlEn(:, j, :) = rlen;
     ApEn(:, j, :) = apen;
     fprintf('Trial loop j= %3d\n', j);
 end
-
+mean(p0_stationary)
+mean(p1_stationary)
 delete(pooljob);
 ipt_rlen = zeros(J, M);
 ipt_apen = zeros(J, M);
@@ -146,5 +141,5 @@ save('Case2Parfor.mat')
 mad_rlen = mean(abs(ipt_rlen - 61))
 sum(isnan(ipt_apen))
 mad_apen = mean(abs(ipt_apen - 61),'omitnan')
-exact_rlen = sum(abs(ipt_rlen - 61) ==0)
-exact_apen = sum(abs(ipt_apen - 61) ==0)
+exact_rlen = mean(abs(ipt_rlen - 61) ==0)
+exact_apen = mean(abs(ipt_apen - 61) ==0)
