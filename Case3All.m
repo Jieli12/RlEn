@@ -108,3 +108,8 @@ for j = 1:J
 end
 
 save('Case3Parfor.mat')
+mad_rlen = mean(abs(ipt_rlen - 161))
+sum(isnan(ipt_apen))
+mad_apen = mean(abs(ipt_apen - 161),'omitnan')
+exact_rlen = sum(abs(ipt_rlen - 161) ==0)
+exact_apen = sum(abs(ipt_apen - 161) ==0)
