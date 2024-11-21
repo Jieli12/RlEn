@@ -1,3 +1,22 @@
+%%
+% Author      : Jie Li, School of Mathematics Statistics and Actuarial Science,
+% 				University of Kent.
+% Date        : 2024-11-21 13:33:31
+% Last Edited : 2024-11-21 22:48:30
+% Last Author : Jie Li
+% File Path   : /RlEn/plot_contraction.m
+% Description :
+%
+%
+%
+%
+%
+%
+%
+%
+% Copyright (c) 2024, Jie Li, jl725@kent.ac.uk
+% All Rights Reserved.
+%%
 clear;
 load("Data40.mat");
 
